@@ -1,7 +1,21 @@
-# Environment variables
+# Python cache files
 __pycache__/
 *.pyc
 *.pyo
+
+# Virtual environment folder
 venv/
+
+# Environment variable file
 .env
 
+# Credentials file (if sensitive)
+credentials.json
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Other temporary files
+*.log
+*.tmp
+# Environment variables
