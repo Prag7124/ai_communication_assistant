@@ -9,6 +9,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from transformers import pipeline
 
+# Initialize the sentiment analysis pipeline
+sentiment_analyzer = pipeline("sentiment-analysis")
+
 # Define the scopes for accessing Gmail API
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.modify', 
@@ -75,4 +78,9 @@ def send_email(creds, recipient, subject, body):
     except HttpError as error:
         print(f"❌ An error occurred: {error}")
         return None
+def classify_email(subject, body):
+    """Classify email based on sentiment."""
+    text = f"{subject} {body}"
+    sentiment = sentiment_analyzer(text)
+    return "Urgent" if sentiment[0]['label'] == 'POSITIVE' else "Low Priority"
 
