@@ -2,6 +2,7 @@ import logging
 from gmail_module.gmail_functions import GmailPriorityManager
 from slack_module.summarize import SlackSummarizer
 from slack_module.daily_digest import SlackDailyDigest
+from slack_module.message_to_task import SlackMessageToTask
 from slack_sdk.errors import SlackApiError
 from dotenv import load_dotenv
 import os
@@ -178,14 +179,16 @@ def gmail_menu(gmail_manager):
 def slack_menu(slack_token, ssl_context):
     slack_summarizer = SlackSummarizer(slack_token, ssl_context=ssl_context)
     slack_digest = SlackDailyDigest(slack_token, ssl_context=ssl_context)
+    slack_task_converter = SlackMessageToTask(slack_token, ssl_context=ssl_context)
 
     while True:
         print("\n===== Slack Menu =====")
         print("1. Summarize Slack Conversations")
         print("2. Generate Daily Digest")
-        print("3. Back to Main Menu")
+        print("3. Convert Messages to Tasks")
+        print("4. Back to Main Menu")
 
-        choice = input("\nSelect an option (1-3): ")
+        choice = input("\nSelect an option (1-4): ")
 
         if choice == '1':
             channel_id = input("Enter Slack channel ID: ")
@@ -214,10 +217,20 @@ def slack_menu(slack_token, ssl_context):
                 logging.error(f"Error generating daily digest: {str(e)}")
 
         elif choice == '3':
+            channel_id = input("Enter Slack channel ID: ")
+            try:
+                tasks = slack_task_converter.extract_tasks(channel_id)
+                print("Extracted Tasks:", tasks)
+            except SlackApiError as e:
+                logging.error(f"Slack API Error: {e.response['error']}")
+            except Exception as e:
+                logging.error(f"Error extracting tasks: {str(e)}")
+
+        elif choice == '4':
             break
         
         else:
-            print("Invalid choice. Please select a number between 1 and 3.")
+            print("Invalid choice. Please select a number between 1 and 4.")
 
 def main():
     # Set up logging

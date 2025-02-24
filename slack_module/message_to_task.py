@@ -4,7 +4,7 @@ from slack_sdk.errors import SlackApiError
 import ssl
 import certifi
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
