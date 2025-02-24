@@ -3,6 +3,7 @@ from gmail_module.gmail_functions import GmailPriorityManager
 from slack_module.summarize import SlackSummarizer
 from slack_module.daily_digest import SlackDailyDigest
 from slack_module.message_to_task import SlackMessageToTask
+from slack_module.smart_search import SlackSmartSearch
 from slack_sdk.errors import SlackApiError
 from dotenv import load_dotenv
 import os
@@ -180,15 +181,17 @@ def slack_menu(slack_token, ssl_context):
     slack_summarizer = SlackSummarizer(slack_token, ssl_context=ssl_context)
     slack_digest = SlackDailyDigest(slack_token, ssl_context=ssl_context)
     slack_task_converter = SlackMessageToTask(slack_token, ssl_context=ssl_context)
+    slack_smart_searcher = SlackSmartSearch(slack_token, ssl_context=ssl_context)
 
     while True:
         print("\n===== Slack Menu =====")
         print("1. Summarize Slack Conversations")
         print("2. Generate Daily Digest")
         print("3. Convert Messages to Tasks")
-        print("4. Back to Main Menu")
+        print("4. Smart Search & Retrieval")
+        print("5. Back to Main Menu")
 
-        choice = input("\nSelect an option (1-4): ")
+        choice = input("\nSelect an option (1-5): ")
 
         if choice == '1':
             channel_id = input("Enter Slack channel ID: ")
@@ -227,10 +230,22 @@ def slack_menu(slack_token, ssl_context):
                 logging.error(f"Error extracting tasks: {str(e)}")
 
         elif choice == '4':
+            channel_id = input("Enter Slack channel ID: ")
+            query = input("Enter search query: ")
+            try:
+                messages = slack_smart_searcher.search_messages(channel_id, query)
+                search_results = slack_smart_searcher.format_search_results(messages)
+                print("Search Results:\n", search_results)
+            except SlackApiError as e:
+                logging.error(f"Slack API Error: {e.response['error']}")
+            except Exception as e:
+                logging.error(f"Error performing smart search: {str(e)}")
+
+        elif choice == '5':
             break
         
         else:
-            print("Invalid choice. Please select a number between 1 and 4.")
+            print("Invalid choice. Please select a number between 1 and 5.")
 
 def main():
     # Set up logging
