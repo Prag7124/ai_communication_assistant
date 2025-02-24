@@ -1,0 +1,104 @@
+{
+  "PRAGATHY K <kprag7124@gmail.com>": {
+    "total_emails": 1,
+    "responses": 1,
+    "response_rate": 1.0,
+    "last_interaction": "2025-02-24T09:50:37.236760"
+  },
+  "71762231035@cit.edu.in": {
+    "total_emails": 3,
+    "responses": 3,
+    "response_rate": 1.0,
+    "last_interaction": "2025-02-24T19:34:07.791061",
+    "reminders": {
+      "1953832f0af6e34a": {
+        "flagged": true,
+        "status": "read",
+        "reminder_time": "2025-02-23T08:30:00+00:00",
+        "reminder_type": "custom",
+        "subject": ""
+      },
+      "1953845b475a2170": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T21:15:53.300056+00:00",
+        "reminder_type": "custom",
+        "subject": ""
+      }
+    }
+  },
+  "\"Sakthi Mala K (Classroom)\" <no-reply@classroom.google.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "195370d54a094109": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T19:16:44.442208+00:00",
+        "reminder_type": "default",
+        "subject": "New material: \"MCQ 1 - Solution\""
+      },
+      "1953707230df8a5f": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T19:04:31.643790+00:00",
+        "reminder_type": "default",
+        "subject": "New material: \"MID Semester QP and Key\""
+      }
+    }
+  },
+  "\"Chitra AD (Classroom)\" <no-reply@classroom.google.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "1953666bab804ccb": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T19:04:41.348700+00:00",
+        "reminder_type": "default",
+        "subject": "New announcement: \"I Mid semester QP and Answer Key\u2026\""
+      }
+    }
+  },
+  "Slack <no-reply@email.slackhq.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "19536384e7728832": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T19:04:57.658225+00:00",
+        "reminder_type": "default",
+        "subject": "Invite your team to Slack"
+      }
+    }
+  },
+  "Mail Delivery Subsystem <mailer-daemon@googlemail.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "19531eb0fcd6bd0f": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T18:13:34.191669+00:00",
+        "reminder_type": "default",
+        "subject": "Delivery Status Notification (Failure)"
+      },
+      "19531c50d6399feb": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-24T18:13:35.920813+00:00",
+        "reminder_type": "default",
+        "subject": "Delivery Status Notification (Failure)"
+      }
+    }
+  }
+}

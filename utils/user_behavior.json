@@ -1,0 +1,19 @@
+
+
+{
+    "sender_priorities": {},
+    "sender@example.com": {
+        "total_emails": 5,
+        "responses": 2,
+        "response_rate": 0.4,
+        "last_interaction": "2025-02-24T10:00:00",
+        "reminders": {
+            "message_id_1": {
+                "flagged": true,
+                "status": "unanswered",
+                "reminder_time": "2025-02-24T15:00:00",
+                "reminder_type": "custom"  // "default" or "custom"
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "meeting": [
+        "Yes, I'm available for the meeting at {time}. Looking forward to it.",
+        "I'll attend the meeting. Thanks for organizing.",
+        "Could we reschedule this meeting for later? I have a conflict.",
+        "Thank you for the invitation. I'll be there."
+    ],
+    "urgent": [
+        "I'll look into this right away and get back to you shortly.",
+        "This is a priority. I'm handling it immediately.",
+        "I'm on it and will respond with updates soon.",
+        "Thank you for bringing this to my attention. Working on it now."
+    ],
+    "acknowledgment": [
+        "Thank you for your email. I'll review and respond soon.",
+        "Got it, thanks for letting me know. Will process this shortly.",
+        "I've received your message and will look into this.",
+        "Thanks for reaching out. I'll get back to you with more details."
+    ],
+    "default": [
+        "Thank you for your message. I'll respond as soon as possible.",
+        "I've received your email and will review it shortly.",
+        "Thanks for contacting me. I'll get back to you soon."
+    ],
+    "follow-up": [
+        "Just following up on my previous email. Please let me know if you have any updates.",
+        "I'm checking in to see if you've had a chance to review my last message.",
+        "Could you please provide an update on the status of my previous request?",
+        "I wanted to follow up and see if there's any progress on this matter."
+    ]
+}
