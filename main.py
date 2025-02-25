@@ -177,11 +177,11 @@ def gmail_menu(gmail_manager):
         else:
             print("Invalid choice. Please select a number between 1 and 4.")
 
-def slack_menu(slack_token, ssl_context):
-    slack_summarizer = SlackSummarizer(slack_token, ssl_context=ssl_context)
-    slack_digest = SlackDailyDigest(slack_token, ssl_context=ssl_context)
-    slack_task_converter = SlackMessageToTask(slack_token, ssl_context=ssl_context)
-    slack_smart_searcher = SlackSmartSearch(slack_token, ssl_context=ssl_context)
+def slack_menu(bot_token, user_token, ssl_context):
+    slack_summarizer = SlackSummarizer(bot_token, ssl_context=ssl_context)
+    slack_digest = SlackDailyDigest(bot_token, ssl_context=ssl_context)
+    slack_task_converter = SlackMessageToTask(bot_token, ssl_context=ssl_context)
+    slack_smart_searcher = SlackSmartSearch(user_token, ssl_context=ssl_context)
 
     while True:
         print("\n===== Slack Menu =====")
@@ -233,7 +233,7 @@ def slack_menu(slack_token, ssl_context):
             channel_id = input("Enter Slack channel ID: ")
             query = input("Enter search query: ")
             try:
-                messages = slack_smart_searcher.search_messages(channel_id, query)
+                messages = slack_smart_searcher.search_messages(query)
                 search_results = slack_smart_searcher.format_search_results(messages)
                 print("Search Results:\n", search_results)
             except SlackApiError as e:
@@ -259,10 +259,11 @@ def main():
         logging.error(f"Failed to initialize Gmail Priority Manager: {str(e)}")
         return
 
-    # Access the Slack token
-    slack_token = os.getenv('SLACK_TOKEN')
-    if not slack_token:
-        logging.error("SLACK_TOKEN environment variable not set.")
+    # Access the Slack tokens
+    bot_token = os.getenv('SLACK_TOKEN')
+    user_token = os.getenv('SLACK_USER_TOKEN')
+    if not bot_token or not user_token:
+        logging.error("SLACK_TOKEN or SLACK_USER_TOKEN environment variable not set.")
         return
 
     # Display main menu for user interaction
@@ -278,7 +279,7 @@ def main():
             gmail_menu(gmail_manager)
         
         elif choice == '2':
-            slack_menu(slack_token, ssl_context)
+            slack_menu(bot_token, user_token, ssl_context)
         
         elif choice == '3':
             print("Exiting AI_Communication_Assistant. Goodbye!")

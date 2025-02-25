@@ -24,6 +24,20 @@
         "reminder_time": "2025-02-24T21:15:53.300056+00:00",
         "reminder_type": "custom",
         "subject": ""
+      },
+      "1953c37170991985": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T15:44:49.167959+00:00",
+        "reminder_type": "custom",
+        "subject": ""
+      },
+      "1953c1e5bf3737e2": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T18:53:13.380847+00:00",
+        "reminder_type": "custom",
+        "subject": ""
       }
     }
   },
@@ -65,10 +79,10 @@
     }
   },
   "Slack <no-reply@email.slackhq.com>": {
-    "total_emails": 0,
-    "responses": 0,
-    "response_rate": 0.0,
-    "last_interaction": null,
+    "total_emails": 1,
+    "responses": 1,
+    "response_rate": 1.0,
+    "last_interaction": "2025-02-25T13:08:58.153395",
     "reminders": {
       "19536384e7728832": {
         "flagged": true,
@@ -76,14 +90,21 @@
         "reminder_time": "2025-02-24T19:04:57.658225+00:00",
         "reminder_type": "default",
         "subject": "Invite your team to Slack"
+      },
+      "1953a8cff392e01c": {
+        "flagged": true,
+        "status": "read",
+        "reminder_time": "2025-02-25T12:38:56.840683+00:00",
+        "reminder_type": "default",
+        "subject": "Invite your team to Slack"
       }
     }
   },
   "Mail Delivery Subsystem <mailer-daemon@googlemail.com>": {
-    "total_emails": 0,
-    "responses": 0,
-    "response_rate": 0.0,
-    "last_interaction": null,
+    "total_emails": 1,
+    "responses": 1,
+    "response_rate": 1.0,
+    "last_interaction": "2025-02-25T13:56:38.339018",
     "reminders": {
       "19531eb0fcd6bd0f": {
         "flagged": true,
@@ -98,6 +119,80 @@
         "reminder_time": "2025-02-24T18:13:35.920813+00:00",
         "reminder_type": "default",
         "subject": "Delivery Status Notification (Failure)"
+      },
+      "1953c1e6d1ec8e12": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T15:26:24.195980+00:00",
+        "reminder_type": "custom",
+        "subject": "Delivery Status Notification (Failure)"
+      }
+    }
+  },
+  "Anthropic Team <team@email2.anthropic.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "1953978a0317d438": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T18:54:21.902575+00:00",
+        "reminder_type": "default",
+        "subject": "Introducing Claude 3.7 Sonnet, now with extended thinking"
+      }
+    }
+  },
+  "Slack <feedback@slack.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "1953943a9a3af7c5": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T18:51:21.584093+00:00",
+        "reminder_type": "default",
+        "subject": "PRAGATHY K just joined your workspace!"
+      },
+      "195389a89f3a6e9e": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T18:51:28.790768+00:00",
+        "reminder_type": "default",
+        "subject": "Slack account sign in from a new device"
+      }
+    }
+  },
+  "Unstop <noreply@emails.unstop.com>": {
+    "total_emails": 1,
+    "responses": 1,
+    "response_rate": 1.0,
+    "last_interaction": "2025-02-25T13:29:37.604331",
+    "reminders": {
+      "1953c1bdd2f7a02c": {
+        "flagged": true,
+        "status": "read",
+        "reminder_time": "2025-02-25T12:59:36.772009+00:00",
+        "reminder_type": "default",
+        "subject": "Registration Complete | Melinia Hackathon 2025"
+      }
+    }
+  },
+  "GeeksforGeeks <no-reply@geeksforgeeks.org>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "1953868059a863fd": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-25T18:51:35.847240+00:00",
+        "reminder_type": "default",
+        "subject": "Want a \u20b97-Figure Tech Job? DSA is the Key!"
       }
     }
   }

@@ -51,7 +51,7 @@ class ResponseSuggester:
         })
         
         # Check for meeting requests
-        if any(keyword in email_content.lower() for keyword in ["meet", "meeting", "appointment", "schedule", "calendar"]):
+        if any keyword in email_content.lower() for keyword in ["meet", "meeting", "appointment", "schedule", "calendar"]:
             suggestions.append({
                 "type": "meeting_accept",
                 "text": self.common_responses["meeting_accept"]
@@ -62,7 +62,7 @@ class ResponseSuggester:
             })
         
         # Check for questions or info requests
-        if "?" in email_content or any(keyword in email_content.lower() for keyword in ["question", "inquiry", "help", "information", "details"]):
+        if "?" in email_content or any keyword in email_content.lower() for keyword in ["question", "inquiry", "help", "information", "details"]:
             suggestions.append({
                 "type": "more_info",
                 "text": self.common_responses["more_info"]
@@ -106,6 +106,7 @@ class GmailPriorityManager:
         self.auth_port = 8080
         self.credentials = None
         self.response_suggester = ResponseSuggester()
+        self.reminders = []
         self.initialize_service()
 
     def initialize_service(self):
@@ -121,8 +122,8 @@ class GmailPriorityManager:
             with open(self.token_path, "rb") as token:
                 creds = pickle.load(token)
 
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
+        if not creds or not creds valid:
+            if creds and creds expired and creds refresh_token:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
@@ -260,7 +261,7 @@ class GmailPriorityManager:
 
                     # Select key points (important sentences)
                     for sent in sentences:
-                        if any(keyword in sent.lower() for keyword in self.urgent_keywords):
+                        if any keyword in sent.lower() for keyword in self.urgent_keywords:
                             thread_summary['key_points'].append(sent)
 
                     # Limit key points
@@ -536,7 +537,7 @@ class GmailPriorityManager:
                     return sent_message
                 else:
                     print("Empty response. Canceled.")
-                    return None
+                return sent_message
             else:
                 # Send selected response
                 selected = suggestions[choice-1]
