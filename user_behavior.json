@@ -202,5 +202,20 @@
         "subject": "Want a \u20b97-Figure Tech Job? DSA is the Key!"
       }
     }
+  },
+  "Google <no-reply@accounts.google.com>": {
+    "total_emails": 0,
+    "responses": 0,
+    "response_rate": 0.0,
+    "last_interaction": null,
+    "reminders": {
+      "1953f9c65b40d0e4": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-26T08:49:03.380654+00:00",
+        "reminder_type": "default",
+        "subject": "Someone added you as their recovery email"
+      }
+    }
   }
 }
