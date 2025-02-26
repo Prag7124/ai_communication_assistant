@@ -1,63 +1,58 @@
-import json
-from typing import List, Dict
-import logging
-import os
-
-
 class ResponseSuggester:
-    def __init__(self, templates_path='utils/response_templates.json'):
-        """Initialize the response suggester with templates from JSON file."""
-        self.templates_path = templates_path
-        self.response_templates = self._load_templates()
-
-    def _load_templates(self) -> Dict:
-        """Load response templates from JSON file."""
-        try:
-            if not os.path.exists(self.templates_path):
-                logging.error(f"Response templates file not found: {self.templates_path}")
-                return {}
-            
-            with open(self.templates_path, 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            logging.error(f"Response templates file not found: {self.templates_path}")
-            return {}
-        except json.JSONDecodeError as e:
-            logging.error(f"JSON decode error in templates file: {str(e)}")
-            return {}
-
-    def get_suggestions(self, email_content: str, email_context: Dict) -> List[Dict]:
-        """Generate contextual response suggestions based on email content and context."""
-        try:
-            suggestions = []
-            subject = email_context.get('subject', '').lower()
-            is_urgent = email_context.get('is_important', False)
-
-            # Add urgent responses if email is marked important
-            if is_urgent and 'urgent' in self.response_templates:
-                suggestions.extend([
-                    {'text': template, 'type': 'urgent'}
-                    for template in self.response_templates['urgent']
-                ])
-
-            # Add meeting-related responses if detected
-            if 'meeting' in subject and 'meeting' in self.response_templates:
-                suggestions.extend([
-                    {'text': template, 'type': 'meeting'}
-                    for template in self.response_templates['meeting']
-                ])
-
-            # Add acknowledgment responses
-            if 'acknowledgment' in self.response_templates:
-                suggestions.extend([
-                    {'text': template, 'type': 'acknowledgment'}
-                    for template in self.response_templates['acknowledgment']
-                ])
-
-            # Limit to top 5 most relevant suggestions
-            return suggestions[:5]
-
-        except Exception as e:
-            logging.error(f"Error generating suggestions: {str(e)}")
-            return []
-
+    """Class to generate response suggestions for emails."""
+    
+    def __init__(self):
+        self.common_responses = {
+            "acknowledgment": "Thank you for your email. I've received it and will get back to you shortly.",
+            "meeting_accept": "I'd be happy to meet with you. The proposed time works for me.",
+            "meeting_reject": "Unfortunately, I won't be able to make that time. Could we find an alternative?",
+            "more_info": "Thank you for reaching out. Could you provide some additional details so I can better assist you?",
+            "follow_up": "I wanted to follow up on our previous conversation. Have you had a chance to review the information I sent?",
+        }
+    
+    def get_suggestions(self, email_content, email_context):
+        """Generate response suggestions based on email content and context."""
+        suggestions = []
+        
+        # Basic acknowledgment (always offer this)
+        suggestions.append({
+            "type": "acknowledgment",
+            "text": self.common_responses["acknowledgment"]
+        })
+        
+        # Check for meeting requests
+        if any(keyword in email_content.lower() for keyword in ["meet", "meeting", "appointment", "schedule", "calendar"]):
+            suggestions.append({
+                "type": "meeting_accept",
+                "text": self.common_responses["meeting_accept"]
+            })
+            suggestions.append({
+                "type": "meeting_reject",
+                "text": self.common_responses["meeting_reject"]
+            })
+        
+        # Check for questions or info requests
+        if "?" in email_content or any(keyword in email_content.lower() for keyword in ["question", "inquiry", "help", "information", "details"]):
+            suggestions.append({
+                "type": "more_info",
+                "text": self.common_responses["more_info"]
+            })
+        
+        # Add custom response based on sender (if we have history)
+        sender = email_context.get('sender', '')
+        if sender:
+            sender_name = sender.split('<')[0].strip()
+            custom_response = f"Hi {sender_name}, thanks for your email about '{email_context.get('subject', '')}'. I'll look into this and get back to you as soon as possible."
+            suggestions.append({
+                "type": "custom_personal",
+                "text": custom_response
+            })
+        
+        # Add priority-based response if marked important
+        if email_context.get('is_important', False):
+            suggestions.append({
+                "type": "priority_response",
+                "text": "I see this is an important matter. I'm prioritizing it and will address it promptly."
+            })
+        
+        return suggestions

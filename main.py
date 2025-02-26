@@ -70,8 +70,7 @@ def handle_email_response(gmail_manager, message_id):
                     print("\nReminder Options:")
                     print("1. Default Reminder (5 hours later)")
                     print("2. Custom Reminder (Set hours)")
-                    print("3. Custom Reminder (Set date & time)")
-                    reminder_choice = int(input("\nSelect reminder option (1-3): "))
+                    reminder_choice = int(input("\nSelect reminder option (1-2): "))
                     
                     if reminder_choice == 1:
                         reminder_time = datetime.now(timezone.utc) + timedelta(hours=5)
@@ -86,17 +85,8 @@ def handle_email_response(gmail_manager, message_id):
                         print(f"Email flagged for reminder at {reminder_time}.")
                         break
                     
-                    elif reminder_choice == 3:
-                        date_str = input("Enter date (YYYY-MM-DD): ")
-                        time_str = input("Enter time (HH:MM): ")
-                        custom_datetime_str = f"{date_str} {time_str}"
-                        reminder_time = datetime.strptime(custom_datetime_str, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
-                        gmail_manager.flag_email_for_reminder(email_data, reminder_time.isoformat(), "custom")
-                        print(f"Email flagged for reminder at {reminder_time}.")
-                        break
-                    
                     else:
-                        print("Invalid selection. Please select a number between 1 and 3.")
+                        print("Invalid selection. Please select a number between 1 and 2.")
                 except ValueError:
                     print("Please enter a valid number.")
     
@@ -108,11 +98,10 @@ def gmail_menu(gmail_manager):
     while True:
         print("\n===== Gmail Menu =====")
         print("1. Check Priority Inbox")
-        print("2. Summarize Recent Threads")
-        print("3. Check Reminders")
-        print("4. Back to Main Menu")
+        print("2. Check Reminders")
+        print("3. Back to Main Menu")
 
-        choice = input("\nSelect an option (1-4): ")
+        choice = input("\nSelect an option (1-3): ")
 
         if choice == '1':
             # Get recent messages
@@ -123,10 +112,10 @@ def gmail_menu(gmail_manager):
                 if not messages:
                     print("No recent messages found.")
                 else:
-                    print("\n----- Priority Inbox -----")
-                    for message in messages:
+                    for i, message in enumerate(messages):
                         try:
                             result = gmail_manager.process_new_email(message['id'])
+                            print(f"\nEmail {i + 1}")
                             print(f"Subject: {result['thread_summary']['subject']}")
                             print(f"Priority: {result['priority']}")
                             print(f"Summary: {result['thread_summary']['summary'][:100]}...")
@@ -134,35 +123,17 @@ def gmail_menu(gmail_manager):
                             
                             # Handle email response
                             handle_email_response(gmail_manager, message['id'])
+                            
+                            # Option to show next email or go back to menu
+                            next_action = input("\nEnter 'n' to see the next email or 'b' to go back to menu: ").lower()
+                            if next_action == 'b':
+                                break
                         except Exception as e:
                             print(f"Error processing message: {str(e)}")
             except Exception as e:
                 logging.error(f"Error fetching messages: {str(e)}")
         
         elif choice == '2':
-            # Get recent threads
-            try:
-                results = gmail_manager.service.users().threads().list(userId='me', maxResults=5).execute()
-                threads = results.get('threads', [])
-                
-                if not threads:
-                    print("No recent threads found.")
-                else:
-                    print("\n----- Recent Thread Summaries -----")
-                    for thread in threads:
-                        try:
-                            summary = gmail_manager.summarize_thread(thread['id'])
-                            print(f"Subject: {summary['subject']}")
-                            print(f"Participants: {', '.join(list(summary['participants'])[:3])}")
-                            print(f"Message Count: {summary['message_count']}")
-                            print(f"Summary: {summary['summary'][:150]}...")
-                            print("--------------------------")
-                        except Exception as e:
-                            print(f"Error summarizing thread: {str(e)}")
-            except Exception as e:
-                logging.error(f"Error fetching threads: {str(e)}")
-        
-        elif choice == '3':
             # Check for reminders
             print("\nChecking for email reminders...")
             try:
@@ -171,11 +142,11 @@ def gmail_menu(gmail_manager):
             except Exception as e:
                 logging.error(f"Error checking reminders: {str(e)}")
         
-        elif choice == '4':
+        elif choice == '3':
             break
         
         else:
-            print("Invalid choice. Please select a number between 1 and 4.")
+            print("Invalid choice. Please select a number between 1 and 3.")
 
 def slack_menu(bot_token, user_token, ssl_context):
     slack_summarizer = SlackSummarizer(bot_token, ssl_context=ssl_context)
@@ -223,7 +194,10 @@ def slack_menu(bot_token, user_token, ssl_context):
             channel_id = input("Enter Slack channel ID: ")
             try:
                 tasks = slack_task_converter.extract_tasks(channel_id)
-                print("Extracted Tasks:", tasks)
+                if not tasks:
+                    print("No tasks found.")
+                else:
+                    print("Extracted Tasks:", tasks)
             except SlackApiError as e:
                 logging.error(f"Slack API Error: {e.response['error']}")
             except Exception as e:

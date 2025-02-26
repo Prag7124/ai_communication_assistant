@@ -6,10 +6,10 @@
     "last_interaction": "2025-02-24T09:50:37.236760"
   },
   "71762231035@cit.edu.in": {
-    "total_emails": 3,
-    "responses": 3,
+    "total_emails": 4,
+    "responses": 4,
     "response_rate": 1.0,
-    "last_interaction": "2025-02-24T19:34:07.791061",
+    "last_interaction": "2025-02-26T05:43:25.396577",
     "reminders": {
       "1953832f0af6e34a": {
         "flagged": true,
@@ -19,23 +19,23 @@
         "subject": ""
       },
       "1953845b475a2170": {
-        "flagged": true,
-        "status": "unanswered",
-        "reminder_time": "2025-02-24T21:15:53.300056+00:00",
+        "flagged": false,
+        "status": "read",
+        "reminder_time": "2025-02-25T20:35:00+00:00",
         "reminder_type": "custom",
         "subject": ""
       },
       "1953c37170991985": {
-        "flagged": true,
-        "status": "unanswered",
-        "reminder_time": "2025-02-25T15:44:49.167959+00:00",
+        "flagged": false,
+        "status": "read",
+        "reminder_time": "2025-02-25T19:53:07.384754+00:00",
         "reminder_type": "custom",
         "subject": ""
       },
       "1953c1e5bf3737e2": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T18:53:13.380847+00:00",
+        "reminder_time": "2025-02-26T13:13:00+00:00",
         "reminder_type": "custom",
         "subject": ""
       }
@@ -48,8 +48,8 @@
     "last_interaction": null,
     "reminders": {
       "195370d54a094109": {
-        "flagged": true,
-        "status": "unanswered",
+        "flagged": false,
+        "status": "read",
         "reminder_time": "2025-02-24T19:16:44.442208+00:00",
         "reminder_type": "default",
         "subject": "New material: \"MCQ 1 - Solution\""
@@ -57,7 +57,7 @@
       "1953707230df8a5f": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-24T19:04:31.643790+00:00",
+        "reminder_time": "2025-02-25T21:48:43.790990+00:00",
         "reminder_type": "default",
         "subject": "New material: \"MID Semester QP and Key\""
       }
@@ -72,7 +72,7 @@
       "1953666bab804ccb": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-24T19:04:41.348700+00:00",
+        "reminder_time": "2025-02-25T21:48:45.691897+00:00",
         "reminder_type": "default",
         "subject": "New announcement: \"I Mid semester QP and Answer Key\u2026\""
       }
@@ -87,7 +87,7 @@
       "19536384e7728832": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-24T19:04:57.658225+00:00",
+        "reminder_time": "2025-02-25T21:48:47.577740+00:00",
         "reminder_type": "default",
         "subject": "Invite your team to Slack"
       },
@@ -97,6 +97,13 @@
         "reminder_time": "2025-02-25T12:38:56.840683+00:00",
         "reminder_type": "default",
         "subject": "Invite your team to Slack"
+      },
+      "1953e1cb4a886d43": {
+        "flagged": true,
+        "status": "unanswered",
+        "reminder_time": "2025-02-26T05:11:58.439884+00:00",
+        "reminder_type": "default",
+        "subject": "How to start a conversation in Slack"
       }
     }
   },
@@ -109,21 +116,21 @@
       "19531eb0fcd6bd0f": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-24T18:13:34.191669+00:00",
+        "reminder_time": "2025-02-25T21:48:48.485913+00:00",
         "reminder_type": "default",
         "subject": "Delivery Status Notification (Failure)"
       },
       "19531c50d6399feb": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-24T18:13:35.920813+00:00",
+        "reminder_time": "2025-02-25T21:48:49.179852+00:00",
         "reminder_type": "default",
         "subject": "Delivery Status Notification (Failure)"
       },
       "1953c1e6d1ec8e12": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T15:26:24.195980+00:00",
+        "reminder_time": "2025-02-25T23:42:09.931926+00:00",
         "reminder_type": "custom",
         "subject": "Delivery Status Notification (Failure)"
       }
@@ -138,7 +145,7 @@
       "1953978a0317d438": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T18:54:21.902575+00:00",
+        "reminder_time": "2025-02-26T04:11:45.910526+00:00",
         "reminder_type": "default",
         "subject": "Introducing Claude 3.7 Sonnet, now with extended thinking"
       }
@@ -153,14 +160,14 @@
       "1953943a9a3af7c5": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T18:51:21.584093+00:00",
+        "reminder_time": "2025-02-26T03:59:01.025544+00:00",
         "reminder_type": "default",
         "subject": "PRAGATHY K just joined your workspace!"
       },
       "195389a89f3a6e9e": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T18:51:28.790768+00:00",
+        "reminder_time": "2025-02-26T03:59:04.555621+00:00",
         "reminder_type": "default",
         "subject": "Slack account sign in from a new device"
       }
@@ -190,7 +197,7 @@
       "1953868059a863fd": {
         "flagged": true,
         "status": "unanswered",
-        "reminder_time": "2025-02-25T18:51:35.847240+00:00",
+        "reminder_time": "2025-02-26T03:59:07.998388+00:00",
         "reminder_type": "default",
         "subject": "Want a \u20b97-Figure Tech Job? DSA is the Key!"
       }

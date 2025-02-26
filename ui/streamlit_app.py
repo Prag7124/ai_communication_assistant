@@ -1,212 +1,122 @@
 import streamlit as st
-import logging
-from dotenv import load_dotenv
-import os
-import ssl
-import sys
-from datetime import datetime, timedelta, timezone
-import certifi  # import certifi module
-
-# Add the parent directory to the Python path for module imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from gmail_module.gmail_functions import GmailPriorityManager
-from slack_module.summarize import SlackSummarizer
-from slack_module.daily_digest import SlackDailyDigest
-from slack_module.message_to_task import SlackMessageToTask
-from slack_module.smart_search import SlackSmartSearch
-from slack_sdk.errors import SlackApiError
-
-# Load environment variables from .env file
-load_dotenv()
+from slack_module.slack_functions import SlackManager
+import logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Set SSL context to use certifi certificates
-ssl_context = ssl.create_default_context(cafile=certifi.where())
+# Initialize managers
+gmail_manager = GmailPriorityManager()
+slack_manager = SlackManager()
 
-def main():
-    st.title("AI Communication Assistant")
+st.title('AI Communication Assistant')
 
-    menu = ["Home", "Gmail", "Slack"]
-    choice = st.sidebar.selectbox("Menu", menu)
-    
-    if choice == "Home":
-        st.subheader("Home")
-        st.write("Welcome to the AI Communication Assistant. Please select an option from the sidebar.")
+# Sidebar for navigation
+st.sidebar.title("Navigation")
+app_mode = st.sidebar.selectbox("Choose the app mode", ["Gmail", "Slack"])
 
-    elif choice == "Gmail":
-        st.subheader("Gmail Operations")
-        gmail_menu()
+if app_mode == "Gmail":
+    st.header("Gmail Management")
+    if st.button("Load Unread Emails"):
+        with st.spinner('Loading unread emails...'):
+            try:
+                unread_emails = gmail_manager.get_unread_emails()
+                st.session_state.unread_emails = unread_emails  # Store in session state
+                if unread_emails:
+                    st.success(f"Loaded {len(unread_emails)} unread email(s).")
+                else:
+                    st.info("No unread emails found.")
+            except Exception as e:
+                st.error(f"Error loading unread emails: {str(e)}")
 
-    elif choice == "Slack":
-        st.subheader("Slack Operations")
-        slack_menu()
+    if "unread_emails" in st.session_state:
+        unread_emails = st.session_state.unread_emails
+        for idx, email_info in enumerate(unread_emails):
+            email_data = email_info.get('email_data', {})
+            thread_summary = email_info.get('thread_summary', {})
+            priority = email_info.get('priority', 'Low Priority')
 
-def gmail_menu():
-    gmail_manager = GmailPriorityManager()
+            st.subheader(f"Email {idx + 1}")
+            st.write(f"**From:** {email_data.get('sender', 'Unknown Sender')}")
+            st.write(f"**Subject:** {email_data.get('subject', 'No Subject')}")
+            st.write(f"**Priority:** {priority}")
+            st.write(f"**Summary:** {thread_summary.get('summary', 'No summary available')}")
+            st.write(f"**Key Points:** {', '.join(thread_summary.get('key_points', []))}")
+            st.write(f"**Latest Update:** {thread_summary.get('latest_update', 'No updates')}")
 
-    gmail_operations = ["List Emails & Options", "Check Reminders", "Back to Main Menu"]
-    operation = st.selectbox("Select Gmail Operation", gmail_operations)
+            if st.button(f"Respond to Email {idx + 1}", key=f"respond_{idx}"):
+                response_text = st.text_area(f"Enter your response for Email {idx + 1}:", height=200, key=f"response_text_{idx}")
+                if st.button(f"Send Response for Email {idx + 1}", key=f"send_response_{idx}"):
+                    if response_text.strip():
+                        try:
+                            gmail_manager.send_quick_response(email_data, response_text)
+                            st.success("Response sent successfully!")
+                        except Exception as e:
+                            st.error(f"Error sending response: {str(e)}")
+                    else:
+                        st.warning("Response text is empty. Please enter a response.")
 
-    if operation == "List Emails & Options":
-        list_emails_and_options(gmail_manager)
-    elif operation == "Check Reminders":
-        check_reminders(gmail_manager)
-    elif operation == "Back to Main Menu":
-        st.experimental_rerun()  # Rerun the app to go back to the main menu
+    if st.button("Check Reminders"):
+        with st.spinner('Checking reminders...'):
+            try:
+                reminder_count = gmail_manager.check_reminders()
+                if reminder_count > 0:
+                    st.success(f"Found {reminder_count} reminders.")
+                else:
+                    st.info("No reminders due at this time.")
+            except Exception as e:
+                st.error(f"Error checking reminders: {str(e)}")
 
-def list_emails_and_options(gmail_manager):
-    st.write("Listing Emails with Options...")
-    results = gmail_manager.service.users().messages().list(userId='me', maxResults=10).execute()
-    messages = results.get('messages', [])
-    
-    if not messages:
-        st.write("No recent messages found.")
-    else:
-        for idx, message in enumerate(messages):
-            result = gmail_manager.process_new_email(message['id'])
-            thread_summary = result['thread_summary']
-            st.write(f"Priority: {result['priority']}")
-            st.write(f"Subject: {thread_summary['subject']}")
-            st.write(f"Summary: {thread_summary['summary'][:100]}...")
-            st.write(f"Participants: {', '.join(list(thread_summary['participants'])[:3])}")
-            st.write("---")
-            handle_email_response(gmail_manager, message['id'], idx)
+elif app_mode == "Slack":
+    st.header("Slack Management")
+    if st.button("Load Slack Conversations"):
+        with st.spinner('Loading Slack conversations...'):
+            try:
+                conversations = slack_manager.get_conversations()
+                st.session_state.conversations = conversations  # Store in session state
+                if conversations:
+                    st.success(f"Loaded {len(conversations)} conversation(s).")
+                else:
+                    st.info("No conversations found.")
+            except Exception as e:
+                st.error(f"Error loading Slack conversations: {str(e)}")
 
-def check_reminders(gmail_manager):
-    st.write("Checking for email reminders...")
-    reminders = gmail_manager.check_reminders()
-    if not reminders:
-        st.write("No reminders found.")
-    else:
-        for idx, reminder in enumerate(reminders):
-            display_reminder(reminder, idx)
+    if "conversations" in st.session_state:
+        conversations = st.session_state.conversations
+        for idx, conv in enumerate(conversations):
+            st.subheader(f"Conversation {idx + 1}")
+            st.write(f"**Channel:** {conv['channel']}")
+            st.write(f"**Participants:** {', '.join(conv['participants'])}")
+            st.write(f"**Summary:** {conv['summary']}")
 
-def display_reminder(reminder, idx):
-    st.write(f"Reminder set for: {reminder['reminder_time']}")
-    st.write(f"Subject: {reminder['subject']}")
-    st.write(f"Snippet: {reminder['snippet']}")
-    
-    if st.button("Read Now (Open Email)", key=f"read_now_{reminder['id']}"):
-        st.write("Opening email in a new tab...")
-        # Here you would implement the logic to open the email
-    
-    if st.button("Mark as Read", key=f"mark_as_read_{reminder['id']}"):
-        st.write("Marking email as read...")
-        # Here you would implement the logic to mark the email as read
-    
-    if st.button("Remind Later (Default: +5 Hours)", key=f"remind_later_default_{reminder['id']}"):
-        new_reminder_time = datetime.now(timezone.utc) + timedelta(hours=5)
-        st.write(f"Reminder set for: {new_reminder_time}")
-        # Here you would implement the logic to update the reminder time
-    
-    custom_hours = st.number_input("Set custom hours:", min_value=1, max_value=24, step=1, key=f"custom_hours_{reminder['id']}")
-    if st.button("Remind Later (Custom Hours)", key=f"remind_later_custom_hours_{reminder['id']}"):
-        new_reminder_time = datetime.now(timezone.utc) + timedelta(hours=custom_hours)
-        st.write(f"Reminder set for: {new_reminder_time}")
-        # Here you would implement the logic to update the reminder time
-    
-    custom_date = st.date_input("Set custom date:", key=f"custom_date_{reminder['id']}")
-    custom_time = st.time_input("Set custom time:", key=f"custom_time_{reminder['id']}")
-    if st.button("Remind Later (Custom Date & Time)", key=f"remind_later_custom_datetime_{reminder['id']}"):
-        new_reminder_time = datetime.combine(custom_date, custom_time).replace(tzinfo=timezone.utc)
-        st.write(f"Reminder set for: {new_reminder_time}")
-        # Here you would implement the logic to update the reminder time
+            if st.button(f"Generate Daily Digest for {conv['channel']}", key=f"digest_{idx}"):
+                try:
+                    digest = slack_manager.generate_daily_digest(conv['channel'])
+                    st.write(f"**Daily Digest:** {digest}")
+                except Exception as e:
+                    st.error(f"Error generating daily digest: {str(e)}")
 
-def handle_email_response(gmail_manager, message_id, idx):
-    result = gmail_manager.process_new_email(message_id)
-    email_data = result['email_data']
-    response_suggestions = gmail_manager.suggest_responses(email_data)
+            if st.button(f"Convert Message to Task for {conv['channel']}", key=f"task_{idx}"):
+                message = st.text_area(f"Enter the message to convert to task for {conv['channel']}:", height=100, key=f"task_message_{idx}")
+                if st.button(f"Convert Message for {conv['channel']}", key=f"convert_task_{idx}"):
+                    if message.strip():
+                        try:
+                            task = slack_manager.convert_message_to_task(message)
+                            st.write(f"**Task Created:** {task}")
+                        except Exception as e:
+                            st.error(f"Error converting message to task: {str(e)}")
+                    else:
+                        st.warning("Message text is empty. Please enter a message.")
 
-    if response_suggestions:
-        st.write("\nResponse Suggestions:")
-        for i, suggestion in enumerate(response_suggestions):
-            st.write(f"{i + 1}. [{suggestion['type']}] {suggestion['text']}")
-        
-        if st.button("Send Suggested Response", key=f"send_response_{idx}"):
-            selected_response = st.selectbox("Select Response", [s['text'] for s in response_suggestions], key=f"select_response_{idx}")
-            sent_message = gmail_manager.send_quick_response(email_data, selected_response)
-            st.write(f"Response sent: {selected_response}")
-
-        if st.button("Flag for Reminder", key=f"flag_reminder_{idx}"):
-            reminder_time = st.slider("Set Reminder Time (hours later)", 1, 24, 5, key=f"slider_{idx}")
-            reminder_time = datetime.now(timezone.utc) + timedelta(hours=reminder_time)
-            gmail_manager.flag_email_for_reminder(email_data, reminder_time.isoformat(), "custom")
-            st.write(f"Email flagged for reminder at {reminder_time}.")
-
-def slack_menu():
-    bot_token = os.getenv('SLACK_TOKEN')
-    user_token = os.getenv('SLACK_USER_TOKEN')
-
-    slack_operations = ["Summarize Slack Conversations", "Generate Daily Digest", "Convert Messages to Tasks", "Smart Search & Retrieval", "Back to Main Menu"]
-    operation = st.selectbox("Select Slack Operation", slack_operations)
-
-    if operation == "Back to Main Menu":
-        st.experimental_rerun()  # Rerun the app to go back to the main menu
-
-    channel_id = st.text_input("Enter Slack Channel ID")
-
-    if operation == "Summarize Slack Conversations":
-        summarize_slack_conversations(bot_token, channel_id)
-    elif operation == "Generate Daily Digest":
-        generate_daily_digest(bot_token, channel_id)
-    elif operation == "Convert Messages to Tasks":
-        convert_messages_to_tasks(bot_token, channel_id)
-    elif operation == "Smart Search & Retrieval":
-        query = st.text_input("Enter Search Query")
-        smart_search_retrieval(user_token, channel_id, query)
-
-def summarize_slack_conversations(bot_token, channel_id):
-    slack_summarizer = SlackSummarizer(bot_token, ssl_context=ssl_context)
-    try:
-        conversations = slack_summarizer.fetch_conversations(channel_id)
-        summary = slack_summarizer.summarize_conversation(conversations)
-        st.write("Slack Conversation Summary:", summary)
-    except SlackApiError as e:
-        st.error(f"Slack API Error: {e.response['error']}")
-    except Exception as e:
-        st.error(f"Error summarizing Slack conversations: {str(e)}")
-
-def generate_daily_digest(bot_token, channel_id):
-    slack_digest = SlackDailyDigest(bot_token, ssl_context=ssl_context)
-    try:
-        conversations = slack_digest.fetch_daily_conversations(channel_id)
-        daily_digest = slack_digest.generate_daily_digest(conversations)
-        st.write("Daily Digest:\n", daily_digest)
-        if st.button("Send Daily Digest"):
-            slack_digest.send_daily_digest(channel_id, daily_digest)
-            st.write("Daily digest sent.")
-    except SlackApiError as e:
-        st.error(f"Slack API Error: {e.response['error']}")
-    except Exception as e:
-        st.error(f"Error generating daily digest: {str(e)}")
-
-def convert_messages_to_tasks(bot_token, channel_id):
-    slack_task_converter = SlackMessageToTask(bot_token, ssl_context=ssl_context)
-    try:
-        tasks = slack_task_converter.extract_tasks(channel_id)
-        st.write("Extracted Tasks:", tasks)
-    except SlackApiError as e:
-        st.error(f"Slack API Error: {e.response['error']}")
-    except Exception as e:
-        st.error(f"Error extracting tasks: {str(e)}")
-
-def smart_search_retrieval(user_token, channel_id, query):
-    slack_smart_searcher = SlackSmartSearch(user_token, ssl_context=ssl_context)
-    try:
-        messages = slack_smart_searcher.search_messages(query)
-        search_results = slack_smart_searcher.format_search_results(messages)
-        st.write("Search Results:\n", search_results)
-    except SlackApiError as e:
-        st.error(f"Slack API Error: {e.response['error']}")
-    except Exception as e:
-        st.error(f"Error performing smart search: {str(e)}")
-
-if __name__ == "__main__":
-    main()
+            if st.button(f"Smart Search in {conv['channel']}", key=f"search_{idx}"):
+                query = st.text_input(f"Enter search query for {conv['channel']}:", key=f"search_query_{idx}")
+                if st.button(f"Search Messages for {conv['channel']}", key=f"search_messages_{idx}"):
+                    if query.strip():
+                        try:
+                            results = slack_manager.search_messages(query)
+                            st.write(f"**Search Results:** {results}")
+                        except Exception as e:
+                            st.error(f"Error searching messages: {str(e)}")
+                    else:
+                        st.warning("Search query is empty. Please enter a query.")

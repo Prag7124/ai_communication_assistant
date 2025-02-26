@@ -64,7 +64,7 @@ if __name__ == "__main__":
     summarizer = SlackSummarizer(slack_token, ssl_context=ssl_context)
 
     # Fetch and summarize conversations from a specific channel
-    channel_id = 'C08EGTBHNE9'
+    channel_id = 'YOUR_CHANNEL_ID'
     conversations = summarizer.fetch_conversations(channel_id)
     summary = summarizer.summarize_conversation(conversations)
     print("Summary:", summary)
