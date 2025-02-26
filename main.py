@@ -1,15 +1,18 @@
-import logging
+from flask import Flask, request, jsonify
 from gmail_module.gmail_functions import GmailPriorityManager
 from slack_module.summarize import SlackSummarizer
 from slack_module.daily_digest import SlackDailyDigest
 from slack_module.message_to_task import SlackMessageToTask
 from slack_module.smart_search import SlackSmartSearch
 from slack_sdk.errors import SlackApiError
+from whatsapp_module.api_client import WhatsAppAPIClient
+from whatsapp_module.whatsapp_assistant import WhatsAppAssistant
 from dotenv import load_dotenv
 import os
 import ssl
 import certifi
 from datetime import datetime, timedelta, timezone
+import logging
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,6 +26,34 @@ logging.basicConfig(
 
 # Set SSL context to use certifi certificates
 ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+# Initialize the Gmail Priority Manager
+try:
+    gmail_manager = GmailPriorityManager()
+    print("Authentication successful! AI_Communication_Assistant initialized.")
+except Exception as e:
+    logging.error(f"Failed to initialize Gmail Priority Manager: {str(e)}")
+    gmail_manager = None
+
+# Access the Slack tokens
+bot_token = os.getenv('SLACK_TOKEN')
+user_token = os.getenv('SLACK_USER_TOKEN')
+if not bot_token or not user_token:
+    logging.error("SLACK_TOKEN or SLACK_USER_TOKEN environment variable not set.")
+    bot_token = None
+    user_token = None
+
+# Initialize WhatsApp API client and assistant
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+from_whatsapp_number = os.getenv("TWILIO_WHATSAPP_NUMBER")
+if account_sid and auth_token and from_whatsapp_number:
+    whatsapp_api_client = WhatsAppAPIClient(account_sid, auth_token, from_whatsapp_number)
+    whatsapp_assistant = WhatsAppAssistant(whatsapp_api_client)
+else:
+    logging.error("Twilio credentials not set.")
+    whatsapp_api_client = None
+    whatsapp_assistant = None
 
 def handle_email_response(gmail_manager, message_id):
     """Handle email processing and response."""
@@ -221,46 +252,61 @@ def slack_menu(bot_token, user_token, ssl_context):
         else:
             print("Invalid choice. Please select a number between 1 and 5.")
 
+def whatsapp_menu(whatsapp_assistant):
+    while True:
+        print("\n===== WhatsApp Menu =====")
+        print("1. Handle Incoming Messages")
+        print("2. Back to Main Menu")
+
+        choice = input("\nSelect an option (1-2): ")
+
+        if choice == '1':
+            # Simulate receiving a message (for example purposes)
+            data = {
+                'Body': input("Enter the message body: "),
+                'From': input("Enter the sender's WhatsApp number: ")
+            }
+            try:
+                whatsapp_assistant.handle_incoming_message(data)
+                print("Message processed successfully.")
+            except Exception as e:
+                logging.error(f"Error processing WhatsApp message: {str(e)}")
+
+        elif choice == '2':
+            break
+        
+        else:
+            print("Invalid choice. Please select a number between 1 and 2.")
+
 def main():
     # Set up logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    # Initialize the Gmail Priority Manager
-    try:
-        gmail_manager = GmailPriorityManager()
-        print("Authentication successful! AI_Communication_Assistant initialized.")
-    except Exception as e:
-        logging.error(f"Failed to initialize Gmail Priority Manager: {str(e)}")
-        return
-
-    # Access the Slack tokens
-    bot_token = os.getenv('SLACK_TOKEN')
-    user_token = os.getenv('SLACK_USER_TOKEN')
-    if not bot_token or not user_token:
-        logging.error("SLACK_TOKEN or SLACK_USER_TOKEN environment variable not set.")
-        return
 
     # Display main menu for user interaction
     while True:
         print("\n===== AI_Communication_Assistant =====")
         print("1. Gmail")
         print("2. Slack")
-        print("3. Exit")
+        print("3. WhatsApp")
+        print("4. Exit")
 
-        choice = input("\nSelect an option (1-3): ")
+        choice = input("\nSelect an option (1-4): ")
         
-        if choice == '1':
+        if choice == '1' and gmail_manager:
             gmail_menu(gmail_manager)
         
-        elif choice == '2':
+        elif choice == '2' and bot_token and user_token:
             slack_menu(bot_token, user_token, ssl_context)
         
-        elif choice == '3':
+        elif choice == '3' and whatsapp_assistant:
+            whatsapp_menu(whatsapp_assistant)
+        
+        elif choice == '4':
             print("Exiting AI_Communication_Assistant. Goodbye!")
             break
         
         else:
-            print("Invalid choice. Please select a number between 1 and 3.")
+            print("Invalid choice or missing configuration. Please select a valid option.")
 
 if __name__ == "__main__":
     main()
